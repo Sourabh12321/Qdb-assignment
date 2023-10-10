@@ -130,12 +130,12 @@ userRouter.put('/update/:id', auth, async (req, res) => {
 
 
 
-userRouter.get("/details/:id?",auth, async (req, res) => {
+userRouter.get("/details", auth,async (req, res) => {
     try {
-        const userId = req.params.id;
-
+        const userId = req.query.id;
+        console.log(userId)
         if (userId) {
-            const user = User.findOne({ where: { id: userId } });
+            const user = await User.findOne({ where: { id: userId } });
 
             if (!user) {
                 return res.status(404).json({ "msg": "User not found." });
