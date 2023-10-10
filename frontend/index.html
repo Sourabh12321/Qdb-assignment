@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css">
+    <title>Login/Signup Page</title>
+</head>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f4;
+        margin: 0;
+        padding: 0;
+    }
+
+    #login-form {
+        display: none;
+    }
+
+    .container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+    }
+
+    .form-container {
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        text-align: center;
+    }
+
+    form {
+        width: 400px;
+        height: 300px;
+        padding: 20px;
+    }
+
+    .form h2 {
+        margin-bottom: 20px;
+        color: #333;
+    }
+
+    input {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+    }
+
+    button {
+        background-color: #007BFF;
+        color: #fff;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+    .toggle-form {
+        margin-top: 10px;
+        color: #777;
+    }
+
+    .toggle-form span {
+        color: #007BFF;
+        cursor: pointer;
+    }
+</style>
+
+<body>
+    <div class="container">
+        <div class="form-container">
+            <div id="login-form">
+                <form>
+                    <h2>Login</h2>
+                    <input type="text" id="login-username" placeholder="email">
+                    <input type="password" id="login-password" placeholder="Password">
+                    <button type="submit">Login</button>
+                    <p class="toggle-form">Don't have an account? <span id="Signup">Signup</span></p>
+                </form>
+            </div>
+            <div id="signup-form">
+                <form>
+                    <h2>Signup</h2>
+                    <input type="text" id="signup-username" placeholder="Username">
+                    <input type="email" id="signup-email" placeholder="Email">
+                    <input type="text" id="image" placeholder="image">
+                    <input type="password" id="signup-password" placeholder="Password">
+                    <button type="submit">Signup</button>
+                    <p class="toggle-form">Already have an account? <span id="Login">Login</span></p>
+                </form>
+            </div>
+
+        </div>
+    </div>
+</body>
+
+</html>
+<script>
+    const apiUrl = "https://qdb.onrender.com"
+
+    const loginForm = document.getElementById('login-form');
+    const signupForm = document.getElementById('signup-form');
+    const toggleL = document.getElementById('Login');
+    const toggleS = document.getElementById('Signup');
+
+    toggleL.addEventListener('click', function () {
+        console.log("login")
+        loginForm.style.display = "block";
+        signupForm.style.display = "none";
+    });
+
+    toggleS.addEventListener('click', function () {
+        console.log("signup")
+        loginForm.style.display = "none";
+        signupForm.style.display = "block";
+    });
+
+    loginForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const username = document.getElementById('login-username').value;
+        const password = document.getElementById('login-password').value;
+        console.log(`Login: Username - ${username}, Password - ${password}`);
+        const response = await fetch(`${apiUrl}/user/login`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ email:username, password }),
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            // console.log('Login successful:',typeof data);
+            console.log(data.token);
+            localStorage.setItem("token",data.token);
+            alert("Login successfull");
+            
+            window.location.href = "Users.html"
+        } else {
+            alert("Wrong credentials");
+            console.error('Login failed:', response.statusText);
+        }
+    });
+
+    signupForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const username = document.getElementById('signup-username').value;
+        const email = document.getElementById('signup-email').value;
+        const password = document.getElementById('signup-password').value;
+        const image = document.getElementById('image').value;
+        console.log(`Signup: Username - ${username}, Email - ${email}, Password - ${password}`);
+        const response = await fetch(`${apiUrl}/user/insert`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ name:username, email, password,image }),
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            console.log('Signup successful:', data);
+            alert("User created successfully")
+        } else {
+            alert("Email is already registered with different account");
+            console.error('Signup failed:', response.statusText);
+            // Handle failed signup, e.g., show an error message
+        }
+    });
+
+
+</script>
